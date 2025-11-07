@@ -1,4 +1,4 @@
-public class Main {
+public class Pract3 {
     // ---------- КЛАСС КНИГА ----------
     static class Book {
         private String title;
