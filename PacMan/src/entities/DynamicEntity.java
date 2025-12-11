@@ -36,7 +36,6 @@ public abstract class DynamicEntity extends Entity {
         int tunnelTop = 9 * size - size / 2;
         int tunnelBottom = 9 * size + size / 2;
 
-        // Призрак находится в пределах туннеля?
         if (y >= tunnelTop && y <= tunnelBottom) {
             // Вышел слева
             if (x < -size) {
@@ -60,10 +59,6 @@ public abstract class DynamicEntity extends Entity {
         }
     }
 
-    public Rectangle getBounds() {
-        return new Rectangle(x, y, size, size);
-    }
-
     public void reset() {
         x = startX;
         y = startY;
@@ -73,14 +68,5 @@ public abstract class DynamicEntity extends Entity {
 
     public void kill() {
         status = EntityStatus.DEAD;
-    }
-
-    public boolean isDead() {
-        return status == EntityStatus.DEAD;
-    }
-
-    @Override
-    public void draw(Graphics g) {
-        g.drawImage(image, x, y, size, size, null);
     }
 }

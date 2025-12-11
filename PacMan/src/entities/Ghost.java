@@ -54,7 +54,6 @@ public class Ghost extends DynamicEntity {
         this.speed = basicSpeed / 2;
         int frightenedDuration = 8000;
         frightenedTimer = frightenedDuration / 50;
-        updateVelocity();
     }
 
 
@@ -68,7 +67,6 @@ public class Ghost extends DynamicEntity {
         mode = GhostMode.EYES;
         image = eyes;
         speed = EYES_SPEED;
-        updateVelocity();
     }
 
 
@@ -76,7 +74,6 @@ public class Ghost extends DynamicEntity {
         mode = GhostMode.CHASE;
         image = base;
         speed = basicSpeed;
-        updateVelocity();
     }
 
     public GhostMode getMode() {
@@ -99,9 +96,7 @@ public class Ghost extends DynamicEntity {
             return;
         }
 
-        updateVelocity();
         chooseDirection(walls);
-        updateVelocity();
         updateVelocity();
         x += velocityX * speed;
         y += velocityY * speed;
@@ -120,7 +115,6 @@ public class Ghost extends DynamicEntity {
             case RIGHT -> { velocityX = 1; velocityY = 0; }
         }
     }
-
 
 
     private void moveToHome() {
