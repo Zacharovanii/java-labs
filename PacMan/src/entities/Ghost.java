@@ -60,13 +60,13 @@ public class Ghost extends DynamicEntity {
     public void changeToEyes() {
         mode = GhostMode.EYES;
         image = eyes;
-        speed = basicSpeed;
+        speed = basicSpeed * 2;
     }
 
     public void changeToChase() {
         mode = GhostMode.CHASE;
         image = base;
-        speed = basicSpeed;
+        speed = basicSpeed / 2;
     }
 
     public GhostMode getMode() {
