@@ -61,6 +61,7 @@ public class GameController {
         bind("moveLeft", () -> game.pacman.requestDirection(Direction.LEFT));
         bind("moveRight", () -> game.pacman.requestDirection(Direction.RIGHT));
 
+        bind("test", this::handleLevelClear);
         bind("togglePause", this::togglePause);
         bind("restart", this::restartGame);
 
@@ -69,6 +70,7 @@ public class GameController {
         im.put(KeyStroke.getKeyStroke("S"), "moveDown");
         im.put(KeyStroke.getKeyStroke("D"), "moveRight");
 
+        im.put(KeyStroke.getKeyStroke("T"), "test");
         im.put(KeyStroke.getKeyStroke("P"), "togglePause");
         im.put(KeyStroke.getKeyStroke("SPACE"), "restart");
     }
@@ -119,10 +121,27 @@ public class GameController {
 
     private void handleLevelClear() {
         game.state.win();
-        game.state.nextLevel();
-        game.nextLevel();
-
         view.repaint();
         hud.repaint();
+
+        gameTimer.stop();
+        hudTimer.stop();
+
+        // Одноразовый Swing Timer — сработает через 1000 мс в EDT, не блокируя UI
+        Timer delay = new Timer(1000, e -> {
+            ((Timer)e.getSource()).stop();
+
+            game.nextLevel(mapLoader.load("basic"));
+
+            gameTimer.start();
+            hudTimer.start();
+
+            view.repaint();
+            hud.repaint();
+        });
+
+        delay.setRepeats(false);
+        delay.start();
     }
+
 }

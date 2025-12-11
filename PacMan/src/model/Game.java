@@ -83,6 +83,7 @@ public class Game {
                 state.increaseScore(50);
                 for (Ghost g : ghosts) {
                     g.changeToFrightened();
+                    state.startFrightenedMode();
                 }
                 break;
             }
@@ -104,6 +105,14 @@ public class Game {
         }
     }
 
+    public void resetMap(Game map) {
+        this.walls = map.walls;
+        this.foods = map.foods;
+        this.ghosts = map.ghosts;
+        this.superFoods = map.superFoods;
+        this.pacman = map.pacman;
+    }
+
     public void handlePacmanDeath() {
         pacman.kill();
         state.decreaseLives();
@@ -120,8 +129,9 @@ public class Game {
         return foods.isEmpty() && superFoods.isEmpty();
     }
 
-    public void nextLevel() {
+    public void nextLevel(Game map) {
         state.nextLevel();
+        resetMap(map);
         resetPositions();
         resetGhosts();
     }

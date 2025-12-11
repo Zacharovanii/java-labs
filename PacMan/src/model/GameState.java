@@ -8,7 +8,7 @@ public class GameState {
     private boolean isPaused;
     private boolean isWin;
     private long frightenedTimer;
-    private static final long FRIGHTENED_DURATION = 10000; // 10 секунд
+    private static final long FRIGHTENED_DURATION = 8000;
 
     public GameState() {
         reset();
@@ -41,7 +41,6 @@ public class GameState {
     public void gameOver() { isGameOver = true; }
     public void togglePause() { isPaused = !isPaused; }
     public void win() { isWin = true; }
-    public void setPaused(boolean paused) { isPaused = paused; }
 
     public void startFrightenedMode() {
         frightenedTimer = System.currentTimeMillis() + FRIGHTENED_DURATION;

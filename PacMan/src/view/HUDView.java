@@ -39,35 +39,6 @@ public class HUDView extends JPanel {
         gameTimer.start();
     }
 
-    /**
-     * Останавливает таймер (пауза)
-     */
-    public void stopTimer() {
-        isTimerActive = false;
-    }
-
-    /**
-     * Запускает/возобновляет таймер
-     */
-    public void startTimer() {
-        isTimerActive = true;
-    }
-
-    /**
-     * Полностью сбрасывает таймер
-     */
-    public void resetTimer() {
-        gameTimeSeconds = 0;
-        isTimerActive = true;
-    }
-
-    /**
-     * Перезапускает игру
-     */
-    public void gameRestarted() {
-        resetTimer();
-        repaint();
-    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -88,11 +59,11 @@ public class HUDView extends JPanel {
 
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 12));
-        g.drawString("LIVES: ", 15, 46);
+        g.drawString("LIVES: ", 15, 52);
 
         int lifeIconSize = 16;
         int lifeStartX = 60;
-        int lifeY = 33;
+        int lifeY = 55 - lifeIconSize;
 
         for (int i = 0; i < game.state.getLives(); i++) {
             g.drawImage(pacmanIcon, lifeStartX + i * (lifeIconSize + 5), lifeY,
@@ -108,7 +79,7 @@ public class HUDView extends JPanel {
             statusText = "GAME OVER";
             statusColor = Color.RED;
         } else if (game.state.isWin()) {
-            statusText = "WINNN!!";
+            statusText = "LEVEL " + game.state.getLevel() + " CLEARED!";
             statusColor = Color.YELLOW;
         } else if (game.state.isPaused()) {
             statusText = "PAUSED";
@@ -118,15 +89,46 @@ public class HUDView extends JPanel {
             statusColor = Color.GREEN;
         }
 
-        g.setColor(new Color(255, 255, 255, 30));
-        g.fillRoundRect(getWidth() / 2 - 60, 8, 120, 25, 10, 10);
-
-        g.setColor(statusColor);
         g.setFont(new Font("Arial", Font.BOLD, 14));
-        g.drawString(statusText, getWidth() / 2 - g.getFontMetrics().stringWidth(statusText) / 2, 25);
+
+        int padding = 20; // отступы слева и справа
+        int textWidth = g.getFontMetrics().stringWidth(statusText);
+        int boxWidth = textWidth + padding * 2;
+        int boxHeight = 25;
+
+        int boxX = getWidth() / 2 - boxWidth / 2;
+        int boxY = 8;
+
+        g.setColor(new Color(255, 255, 255, 30));
+        g.fillRoundRect(boxX, boxY, boxWidth, boxHeight, 10, 10);
 
         g.setColor(new Color(255, 255, 255, 80));
-        g.drawRoundRect(getWidth() / 2 - 60, 8, 120, 25, 10, 10);
+        g.drawRoundRect(boxX, boxY, boxWidth, boxHeight, 10, 10);
+
+        g.setColor(statusColor);
+        g.drawString(statusText,
+                getWidth() / 2 - textWidth / 2,
+                boxY + 17
+        );
+
+        if (game.state.isGameOver()) {
+            String hint = "SPACE to restart";
+            g.drawString(hint, getWidth() / 2 - g.getFontMetrics().stringWidth(hint) / 2, 55);
+        } else if (game.state.isGhostsFrightened()) {
+            long frightLeft = game.state.getFrightenedTimeLeft();
+
+            if (frightLeft > 0) {
+                g.setColor(Color.PINK);
+                g.setFont(new Font("Arial", Font.BOLD, 14));
+
+                String frightText = "FRIGHT: " + formatMilliseconds(frightLeft);
+                g.drawString(
+                        frightText,
+                        getWidth() / 2 - g.getFontMetrics().stringWidth(frightText) / 2,
+                        55
+                );
+            }
+        }
     }
 
     private void drawRightSection(Graphics2D g) {
@@ -146,10 +148,16 @@ public class HUDView extends JPanel {
         g.drawString("TIME: " + timePlayed, getWidth() - g.getFontMetrics().stringWidth("TIME: " + timePlayed) - rightMargin, 25);
 
         // Уровень
-//        g.setColor(Color.ORANGE);
-//        g.setFont(new Font("Arial", Font.BOLD, 14));
-//        String levelText = "LEVEL: " + GameModel.level;
-//        g.drawString(levelText, getWidth() - g.getFontMetrics().stringWidth(levelText) - rightMargin, 40);
+        g.setColor(Color.ORANGE);
+        g.setFont(new Font("Arial", Font.BOLD, 14));
+        String levelText = "LEVEL: " + game.state.getLevel();
+        g.drawString(
+                levelText,
+                getWidth() - g.getFontMetrics().stringWidth(levelText) - rightMargin,
+                55
+        );
+
+
 
         // Индикатор паузы возле таймера
         if (game.state.isPaused()) {
@@ -165,10 +173,11 @@ public class HUDView extends JPanel {
         return String.format("%02d:%02d", minutes, seconds);
     }
 
-    /**
-     * Возвращает текущее игровое время в секундах
-     */
-    public int getGameTime() {
-        return gameTimeSeconds;
+    private String formatMilliseconds(long ms) {
+        long seconds = ms / 1000;
+        long s = seconds % 60;
+        long m = seconds / 60;
+        return String.format("%02d:%02d", m, s);
     }
+
 }
