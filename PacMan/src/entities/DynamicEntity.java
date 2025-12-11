@@ -4,7 +4,6 @@ import java.awt.*;
 import java.util.HashSet;
 
 import model.Direction;
-import model.GameModel;
 
 public abstract class DynamicEntity extends Entity {
 
@@ -16,8 +15,8 @@ public abstract class DynamicEntity extends Entity {
     public int velocityY = 0;
     public int speed;
 
-    public DynamicEntity(Image img, int x, int y, int w, int h, int speed) {
-        super(img, x, y, w, h);
+    public DynamicEntity(Image img, int x, int y, int size, int speed) {
+        super(img, x, y, size);
         this.speed = speed;
         this.startX = x;
         this.startY = y;
@@ -33,20 +32,19 @@ public abstract class DynamicEntity extends Entity {
     }
 
 
-    public void handleTeleport() {
-
-        int tunnelY = 9 * GameModel.tileSize;
-        int tolerance = GameModel.tileSize / 2;
+    public void handleTeleport(int boardWidth) {
+        int tunnelY = 9 * size;
+        int tolerance = size / 2;
 
         // Проверяем, что призрак именно в туннеле
         if (Math.abs(y - tunnelY) > tolerance) return;
 
-        if (x < -width) {
-            x = GameModel.boardWidth;
+        if (x < -size) {
+            x = boardWidth;
             y = tunnelY;
         }
-        else if (x > GameModel.boardWidth) {
-            x = -width;
+        else if (x > boardWidth) {
+            x = -size;
             y = tunnelY;
         }
     }
@@ -64,7 +62,7 @@ public abstract class DynamicEntity extends Entity {
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(x, y, width, height);
+        return new Rectangle(x, y, size, size);
     }
 
     public void reset() {
@@ -84,6 +82,6 @@ public abstract class DynamicEntity extends Entity {
 
     @Override
     public void draw(Graphics g) {
-        g.drawImage(image, x, y, width, height, null);
+        g.drawImage(image, x, y, size, size, null);
     }
 }

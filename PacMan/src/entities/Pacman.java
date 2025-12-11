@@ -2,16 +2,27 @@ package entities;
 
 import java.awt.*;
 import java.util.HashSet;
-import model.GameModel;
+
 import model.Direction;
 
 public class Pacman extends DynamicEntity {
 
     private Direction desiredDirection = Direction.NONE;
+    private final Image up;
+    private final Image down;
+    private final Image left;
+    private final Image right;
 
 
-    public Pacman(Image img, int x, int y) {
-        super(img, x, y, GameModel.tileSize, GameModel.tileSize, GameModel.tileSize / 4);
+    public Pacman(
+            Image _up, Image _down, Image _left, Image _right,
+            int x, int y, int size, int speed
+    ) {
+        super(_right, x, y, size, speed);
+        up = _up;
+        down = _down;
+        left = _left;
+        right = _right;
     }
 
     public void requestDirection(Direction d) {
@@ -21,15 +32,14 @@ public class Pacman extends DynamicEntity {
 
     public void updateSprite() {
         switch (direction) {
-            case UP -> image = GameModel.pacmanUpImage;
-            case DOWN -> image = GameModel.pacmanDownImage;
-            case LEFT -> image = GameModel.pacmanLeftImage;
-            case RIGHT -> image = GameModel.pacmanRightImage;
+            case UP -> image = up;
+            case DOWN -> image = down;
+            case LEFT -> image = left;
+            case RIGHT -> image = right;
         }
     }
 
     public void move(HashSet<Wall> walls) {
-
         // --- 1. Пробуем применить buffered turn ---
         if (desiredDirection != null && canTurn(desiredDirection, walls)) {
             direction = desiredDirection;
@@ -41,7 +51,7 @@ public class Pacman extends DynamicEntity {
         x += velocityX;
         y += velocityY;
 
-        handleTeleport();
+//        handleTeleport();
         checkWallsCollision(walls);
 
         updateSprite();
@@ -50,11 +60,11 @@ public class Pacman extends DynamicEntity {
 
     private boolean canTurn(Direction d, HashSet<Wall> walls) {
         // Проверяем, что Pacman почти по центру тайла
-        int centerX = (x + width / 2) / GameModel.tileSize;
-        int centerY = (y + height / 2) / GameModel.tileSize;
+        int centerX = (x + size / 2) / size;
+        int centerY = (y + size / 2) / size;
 
-        int targetX = centerX * GameModel.tileSize;
-        int targetY = centerY * GameModel.tileSize;
+        int targetX = centerX * size;
+        int targetY = centerY * size;
 
         // Если Pacman не почти по центру тайла — не поворачиваем
         if (Math.abs(x - targetX) > 3 || Math.abs(y - targetY) > 3)
@@ -64,13 +74,13 @@ public class Pacman extends DynamicEntity {
         int newX = x, newY = y;
 
         switch (d) {
-            case UP    -> newY -= GameModel.tileSize/2;
-            case DOWN  -> newY += GameModel.tileSize/2;
-            case LEFT  -> newX -= GameModel.tileSize/2;
-            case RIGHT -> newX += GameModel.tileSize/2;
+            case UP    -> newY -= size/2;
+            case DOWN  -> newY += size/2;
+            case LEFT  -> newX -= size/2;
+            case RIGHT -> newX += size/2;
         }
 
-        Rectangle test = new Rectangle(newX, newY, width, height);
+        Rectangle test = new Rectangle(newX, newY, size, size);
 
         for (Wall w : walls) {
             if (test.intersects(w.getBounds())) return false;

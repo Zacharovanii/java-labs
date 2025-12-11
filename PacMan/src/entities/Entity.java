@@ -4,25 +4,24 @@ import java.awt.*;
 
 public abstract class Entity {
     public int x, y;
-    public int width, height;
+    public int size;
     public Image image;
 
-    public Entity(Image img, int x, int y, int w, int h) {
+    public Entity(Image img, int x, int y, int size) {
         this.image = img;
         this.x = x;
         this.y = y;
-        this.width = w;
-        this.height = h;
+        this.size = size;
     }
 
     public boolean intersects(Entity other) {
-        return x < other.x + other.width &&
-                x + width > other.x &&
-                y < other.y + other.height &&
-                y + height > other.y;
+        return x < other.x + other.size &&
+                x + size > other.x &&
+                y < other.y + other.size &&
+                y + size > other.y;
     }
 
     public void draw(Graphics g) {
-        g.drawImage(this.image, this.x, this.y, this.width, this.height, null);
+        g.drawImage(this.image, this.x, this.y, this.size, this.size, null);
     }
 }

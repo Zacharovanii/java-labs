@@ -1,7 +1,6 @@
 package entities;
 
 import model.Direction;
-import model.GameModel;
 import model.GhostMode;
 
 import java.awt.*;
@@ -12,22 +11,30 @@ import java.util.Random;
 
 public class Ghost extends DynamicEntity {
     private Pacman target;
-    private final Random random;
-    private final Image basicImg;
+    private final Random random = new Random();
     private GhostMode mode = GhostMode.CHASE;
 
     private int frightenedTimer = 0;
-    private final int frightenedDuration = 8000; // 3 секунды, под таймер 50мс
 
-    private final int basicSpeed = GameModel.tileSize / 4;
-    private final int frightenedSpeed = basicSpeed / 2;
-    private final int eyesSpeed = GameModel.tileSize;
+    private int speed;
+    private final int basicSpeed;
 
-    public Ghost(Image img, int x, int y) {
-        super(img, x, y, GameModel.tileSize, GameModel.tileSize, GameModel.tileSize / 4);
-        this.random = new Random();
-        this.basicImg = img;
-        this.direction = Direction.RIGHT;
+    private final Image base;
+    private final Image scared;
+    private final Image eyes;
+
+    public Ghost(
+            Image _base, Image _scared, Image _eyes,
+            int x, int y, int size, int _speed
+
+    ) {
+        super(_base, x, y, size, _speed);
+        base = _base;
+        scared = _scared;
+        eyes = _eyes;
+        speed = _speed;
+        basicSpeed = _speed;
+        direction = Direction.RIGHT;
     }
 
     public void addTarget(Pacman pacman) {
@@ -37,27 +44,28 @@ public class Ghost extends DynamicEntity {
     public void changeToFrightened() {
         if (mode == GhostMode.EYES) return; // глаза не пугаются
         mode = GhostMode.FRIGHTENED;
-        image = GameModel.scaredGhost;
-        speed = frightenedSpeed;
+        image = scared;
+        speed = basicSpeed / 2;
+        int frightenedDuration = 8000;
         frightenedTimer = frightenedDuration / 50; // пересчитали под 50мс Tick
     }
 
 
     private void snapToGrid() {
-        x = (x / GameModel.tileSize) * GameModel.tileSize;
-        y = (y / GameModel.tileSize) * GameModel.tileSize;
+        x = (x / size) * size;
+        y = (y / size) * size;
     }
 
 
     public void changeToEyes() {
         mode = GhostMode.EYES;
-        image = GameModel.eyes;
+        image = eyes;
         speed = basicSpeed;
     }
 
     public void changeToChase() {
         mode = GhostMode.CHASE;
-        image = basicImg;
+        image = base;
         speed = basicSpeed;
     }
 
@@ -67,8 +75,6 @@ public class Ghost extends DynamicEntity {
 
 
     public void move(HashSet<Wall> walls) {
-
-        // уменьшаем таймер испуга
         if (mode == GhostMode.FRIGHTENED) {
             frightenedTimer--;
             if (frightenedTimer <= 0) {
@@ -88,7 +94,7 @@ public class Ghost extends DynamicEntity {
         x += velocityX;
         y += velocityY;
 
-        handleTeleport();
+//        handleTeleport();
         checkWallsCollision(walls);
     }
 
@@ -122,8 +128,6 @@ public class Ghost extends DynamicEntity {
         }
     }
 
-
-
     private void chooseDirection(HashSet<Wall> walls) {
         List<Direction> possibleDirections = getPossibleDirections(walls);
         if (possibleDirections.isEmpty()) return;
@@ -145,7 +149,7 @@ public class Ghost extends DynamicEntity {
         if (bestDirection != null && !isOppositeDirection(bestDirection, direction)) {
             this.direction = bestDirection;
         } else {
-            // Если лучший направление - разворот, выбираем другое хорошее направление
+            // Если лучшее направление - разворот, выбираем другое хорошее направление
             Direction alternative = findGoodAlternative(possibleDirections);
             if (alternative != null) {
                 this.direction = alternative;
@@ -259,7 +263,7 @@ public class Ghost extends DynamicEntity {
         if (mode == GhostMode.EYES)
             return true;   // глаза проходят сквозь стены
 
-        Rectangle futureBounds = new Rectangle(x, y, width, height);
+        Rectangle futureBounds = new Rectangle(x, y, size, size);
 
         switch (dir) {
             case UP -> futureBounds.y -= speed;

@@ -1,7 +1,5 @@
 package entities;
 
-import model.GameModel;
-
 import java.awt.*;
 import java.util.HashSet;
 
@@ -9,12 +7,12 @@ public class Wall extends StaticEntity {
 
     private static final int VISUAL_PADDING = 4; // отступ внутри хитбокса
 
-    public Wall(int x, int y) {
-        super(null, x, y, GameModel.tileSize, GameModel.tileSize);
+    public Wall(int x, int y, int size) {
+        super(null, x, y, size);
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(x, y, width, height);
+        return new Rectangle(x, y, size, size);
     }
 
     @Override
@@ -30,11 +28,9 @@ public class Wall extends StaticEntity {
     }
 
 
-    public static void drawWalls(Graphics g, HashSet<Wall> walls) {
+    public static void drawWalls(Graphics g, HashSet<Wall> walls, int size) {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF); // В оригинале не было сглаживания
-
-        int size = GameModel.tileSize;
         g2.setColor(Color.BLUE);
 
         int wallThickness = 4;
@@ -44,14 +40,14 @@ public class Wall extends StaticEntity {
             int y = wall.y;
 
             // Проверяем всех соседей
-            boolean top = walls.contains(new Wall(x, y - size));
-            boolean bottom = walls.contains(new Wall(x, y + size));
-            boolean left = walls.contains(new Wall(x - size, y));
-            boolean right = walls.contains(new Wall(x + size, y));
-            boolean topLeft = walls.contains(new Wall(x - size, y - size));
-            boolean topRight = walls.contains(new Wall(x + size, y - size));
-            boolean bottomLeft = walls.contains(new Wall(x - size, y + size));
-            boolean bottomRight = walls.contains(new Wall(x + size, y + size));
+            boolean top         = walls.contains(new Wall(x, y - size, size));
+            boolean bottom      = walls.contains(new Wall(x, y + size, size));
+            boolean left        = walls.contains(new Wall(x - size, y, size));
+            boolean right       = walls.contains(new Wall(x + size, y, size));
+            boolean topLeft     = walls.contains(new Wall(x - size, y - size, size));
+            boolean topRight    = walls.contains(new Wall(x + size, y - size, size));
+            boolean bottomLeft  = walls.contains(new Wall(x - size, y + size, size));
+            boolean bottomRight = walls.contains(new Wall(x + size, y + size, size));
 
             // Оригинальный алгоритм Пакмана:
             // 1. Всегда рисуем внутренние углы
