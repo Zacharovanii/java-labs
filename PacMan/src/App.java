@@ -12,14 +12,10 @@ public class App {
                 ImageLoader images = new ImageLoader();
                 MapLoader mapLoader = new MapLoader(images, 32);
 
-                // Создание UI
                 GameView gameView = new GameView();
                 HUDView hudView = new HUDView();
-
-                // Создание контроллера
                 GameController controller = new GameController(gameView, hudView, mapLoader);
 
-                // Создание основного окна
                 JFrame frame = new JFrame("Pacman");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));

@@ -16,17 +16,24 @@ public class GameController {
     private Timer gameTimer;
     private Timer hudTimer;
 
+    private final String[] mapNames = {"basic", "level2", "level3"};
+    private int currentMapIndex = 0;
+
     public GameController(GameView view, HUDView hud, MapLoader mapLoader) {
         this.view = view;
         this.hud = hud;
         this.mapLoader = mapLoader;
 
-        this.game = mapLoader.load("basic");
-        view.setGame(game);
-        hud.setGame(game);
+        loadCurrentMap();
 
         initializeTimers();
         setupKeyBindings();
+    }
+
+    private void loadCurrentMap() {
+        game = mapLoader.load(mapNames[currentMapIndex]);
+        view.setGame(game);
+        hud.setGame(game);
     }
 
     private void initializeTimers() {
@@ -127,15 +134,16 @@ public class GameController {
         gameTimer.stop();
         hudTimer.stop();
 
-        // Одноразовый Swing Timer — сработает через 1000 мс в EDT, не блокируя UI
         Timer delay = new Timer(1000, e -> {
             ((Timer)e.getSource()).stop();
 
-            game.nextLevel(mapLoader.load("basic"));
+            // Следующая карта по кругу
+            currentMapIndex = (currentMapIndex + 1) % mapNames.length;
+            Game nextMap = mapLoader.load(mapNames[currentMapIndex]);
+            game.nextLevel(nextMap);
 
             gameTimer.start();
             hudTimer.start();
-
             view.repaint();
             hud.repaint();
         });
