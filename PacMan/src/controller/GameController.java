@@ -7,6 +7,7 @@ import model.Direction;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 public class GameController {
     private Game game;
@@ -83,20 +84,22 @@ public class GameController {
     }
 
     private void updateGame() {
-        if (game.state.isGameOver() || game.state.isPaused()) {
+        if (game.state.isPaused()) {
             return;
+        } else if (game.state.isGameOver()) {
+            handleGameOver();
+        } else {
+            game.movePacman();
+            game.eatFood();
+            game.moveGhosts();
+
+            if (game.isLevelCleared()) {
+                handleLevelClear();
+            }
+
+            view.repaint();
+            hud.repaint();
         }
-
-        game.movePacman();
-        game.eatFood();
-        game.moveGhosts();
-
-        if (game.isLevelCleared()) {
-            handleLevelClear();
-        }
-
-        view.repaint();
-        hud.repaint();
     }
 
     private void togglePause() {
@@ -125,6 +128,28 @@ public class GameController {
         view.repaint();
         hud.repaint();
     }
+
+    private void handleGameOver() {
+        gameTimer.stop();
+        hudTimer.stop();
+
+        String username = JOptionPane.showInputDialog(view, "Введите ваше имя:");
+
+        if (username != null && !username.isBlank()) {
+            LeaderRepository.addLeader(username.trim(), game.state.getScore());
+        }
+
+        java.util.List<Leader> topLeaders = LeaderRepository.getTopLeaders();
+        StringBuilder sb = new StringBuilder("Топ-5 игроков:\n");
+        for (int i = 0; i < topLeaders.size(); i++) {
+            sb.append(i + 1).append(". ").append(topLeaders.get(i)).append("\n");
+        }
+
+        JOptionPane.showMessageDialog(view, sb.toString(), "Лидеры", JOptionPane.INFORMATION_MESSAGE);
+
+        restartGame();
+    }
+
 
     private void handleLevelClear() {
         game.state.win();
