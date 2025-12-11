@@ -2,28 +2,27 @@ package utils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 
 public class ImageLoader {
+    public final Image WALL;
+    public final Image BLUE_GHOST;
+    public final Image ORANGE_GHOST;
+    public final Image PINK_GHOST;
+    public final Image RED_GHOST;
+    public final Image SCARED_GHOST;
+    public final Image EYES_GHOST;
 
-    public static final Image WALL;
-    public static final Image BLUE_GHOST;
-    public static final Image ORANGE_GHOST;
-    public static final Image PINK_GHOST;
-    public static final Image RED_GHOST;
-    public static final Image SCARED_GHOST;
-    public static final Image EYES_GHOST;
+    public final Image PACMAN_UP;
+    public final Image PACMAN_DOWN;
+    public final Image PACMAN_LEFT;
+    public final Image PACMAN_RIGHT;
 
-    public static final Image PACMAN_UP;
-    public static final Image PACMAN_DOWN;
-    public static final Image PACMAN_LEFT;
-    public static final Image PACMAN_RIGHT;
+    public final Image CHERRY;
+    public final Image CHERRY_2;
+    public final Image POWER_FOOD;
 
-    public static final Image CHERRY;
-    public static final Image CHERRY_2;
-    public static final Image POWER_FOOD;
-
-
-    static {
+    ImageLoader() {
         WALL = load("assets/wall.png");
         BLUE_GHOST = load("assets/blueGhost.png");
         ORANGE_GHOST = load("assets/orangeGhost.png");
@@ -42,7 +41,15 @@ public class ImageLoader {
         POWER_FOOD = load("assets/powerFood.png");
     }
 
-    private static Image load(String path) {
-        return new ImageIcon(ImageLoader.class.getClassLoader().getResource(path)).getImage();
+    private Image load(String path) {
+        URL url = getClass().getResource(path);
+        if (url == null) {
+            throw new RuntimeException(
+            "Не удалось загрузить изображение: " + path +
+            ". Проверьте наличие файла в ресурсах."
+            );
+        }
+        ImageIcon icon = new ImageIcon(url);
+        return icon.getImage();
     }
 }
