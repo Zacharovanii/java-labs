@@ -1,20 +1,27 @@
 package view;
 
+import model.Game;
+
 import javax.swing.*;
 import java.awt.*;
-import model.GameModel;
 
 public class HUDView extends JPanel {
     private int gameTimeSeconds = 0;
-    private final Image pacmanIcon;
+    private Image pacmanIcon;
     private boolean isTimerActive = true;
 
+    private Game game;
+
     public HUDView() {
-        setPreferredSize(new Dimension(GameModel.boardWidth, 60));
-        setBackground(Color.BLACK); // Убираем полупрозрачность - просто черный
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+        setPreferredSize(new Dimension(game.geometry.boardWidth(), 60));
+        setBackground(Color.BLACK);
         setForeground(Color.WHITE);
 
-        pacmanIcon = GameModel.pacmanRightImage;
+        this.pacmanIcon = game.pacman.right;
         startGameTimer();
     }
 
@@ -24,7 +31,7 @@ public class HUDView extends JPanel {
     private void startGameTimer() {
         // Обновляем каждую секунду
         Timer gameTimer = new Timer(1000, e -> { // Обновляем каждую секунду
-            if (isTimerActive && !GameModel.isPaused && !GameModel.gameOver) {
+            if (isTimerActive && !game.state.isPaused() && !game.state.isGameOver()) {
                 gameTimeSeconds++;
                 repaint();
             }
@@ -77,7 +84,7 @@ public class HUDView extends JPanel {
     private void drawLeftSection(Graphics2D g) {
         g.setColor(Color.YELLOW);
         g.setFont(new Font("Arial", Font.BOLD, 16));
-        g.drawString("SCORE: " + GameModel.score, 15, 25);
+        g.drawString("SCORE: " + game.state.getScore(), 15, 25);
 
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 12));
@@ -87,7 +94,7 @@ public class HUDView extends JPanel {
         int lifeStartX = 60;
         int lifeY = 33;
 
-        for (int i = 0; i < GameModel.lives; i++) {
+        for (int i = 0; i < game.state.getLives(); i++) {
             g.drawImage(pacmanIcon, lifeStartX + i * (lifeIconSize + 5), lifeY,
                     lifeIconSize, lifeIconSize, null);
         }
@@ -97,13 +104,13 @@ public class HUDView extends JPanel {
         String statusText;
         Color statusColor;
 
-        if (GameModel.gameOver) {
+        if (game.state.isGameOver()) {
             statusText = "GAME OVER";
             statusColor = Color.RED;
-        } else if (GameModel.win) {
+        } else if (game.state.isWin()) {
             statusText = "WINNN!!";
             statusColor = Color.YELLOW;
-        } else if (GameModel.isPaused) {
+        } else if (game.state.isPaused()) {
             statusText = "PAUSED";
             statusColor = Color.YELLOW;
         } else {
@@ -129,7 +136,7 @@ public class HUDView extends JPanel {
         String timePlayed = formatTime(gameTimeSeconds);
 
         // Меняем цвет таймера на паузе
-        if (GameModel.isPaused) {
+        if (game.state.isPaused()) {
             g.setColor(Color.GRAY);
         } else {
             g.setColor(Color.CYAN);
@@ -145,7 +152,7 @@ public class HUDView extends JPanel {
 //        g.drawString(levelText, getWidth() - g.getFontMetrics().stringWidth(levelText) - rightMargin, 40);
 
         // Индикатор паузы возле таймера
-        if (GameModel.isPaused) {
+        if (game.state.isPaused()) {
             g.setColor(Color.YELLOW);
             g.setFont(new Font("Arial", Font.BOLD, 12));
             g.drawString("⏸", getWidth() - 35, 38);

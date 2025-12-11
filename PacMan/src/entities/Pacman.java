@@ -8,10 +8,10 @@ import model.Direction;
 public class Pacman extends DynamicEntity {
 
     private Direction desiredDirection = Direction.NONE;
-    private final Image up;
-    private final Image down;
-    private final Image left;
-    private final Image right;
+    public final Image up;
+    public final Image down;
+    public final Image left;
+    public final Image right;
 
 
     public Pacman(

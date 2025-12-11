@@ -1,35 +1,32 @@
 package view;
 
 import entities.*;
-import model.GameModel;
-import model.MapModel;
+import model.Game;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class GameView extends JPanel {
 
-    private MapModel map;
+    private Game map;
 
-    public GameView(MapModel map) {
+    public GameView() {}
+
+    public void setGame(Game map) {
         this.map = map;
-        setPreferredSize(new Dimension(GameModel.boardWidth, GameModel.boardHeight));
+        setPreferredSize(new Dimension(map.geometry.boardWidth(), map.geometry.boardHeight()));
         setBackground(Color.BLACK);
-    }
-
-    public void setMap(MapModel map) {
-        this.map = map;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        Wall.drawWalls(g, map.walls);
+        Wall.drawWalls(g, map.walls, map.geometry.tileSize());
 
         g.setColor(Color.WHITE);
         for (Food f : map.foods)
-            g.fillRect(f.x, f.y, f.width, f.height);
+            g.fillRect(f.x, f.y, f.size, f.size);
 
         g.setColor(Color.ORANGE);
         for (SuperFood f : map.superFoods)

@@ -1,34 +1,49 @@
 import controller.GameController;
-import model.GameModel;
 import model.MapLoader;
-import model.MapModel;
+import utils.ImageLoader;
 import view.GameView;
 import view.HUDView;
-
 import javax.swing.*;
-import java.awt.*;
 
-public class App extends JFrame {
-    App() {
-        super("PacMan");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setResizable(false);
-
-        MapModel model = MapLoader.load(GameModel.tileMap);
-        GameView view = new GameView(model);
-        HUDView hud = new HUDView();
-        GameController controller = new GameController(model, view, hud);
-
-        add(hud, BorderLayout.NORTH);
-        add(view, BorderLayout.CENTER);
-
-        addKeyListener(controller);
-
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
-    }
+public class App {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(App::new);
+        SwingUtilities.invokeLater(() -> {
+            try {
+                ImageLoader images = new ImageLoader();
+                MapLoader mapLoader = new MapLoader(images, 32);
+
+                // Создание UI
+                GameView gameView = new GameView();
+                HUDView hudView = new HUDView();
+
+                // Создание контроллера
+                GameController controller = new GameController(gameView, hudView, mapLoader);
+
+                // Создание основного окна
+                JFrame frame = new JFrame("Pacman");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+
+                frame.add(hudView);
+                frame.add(gameView);
+
+                frame.pack();
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+
+                // Добавление слушателей клавиш
+                frame.addKeyListener(controller);
+                gameView.addKeyListener(controller);
+                hudView.addKeyListener(controller);
+
+                frame.requestFocusInWindow();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "Error initializing game: " + e.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 }

@@ -5,7 +5,6 @@ import java.awt.*;
 import java.net.URL;
 
 public class ImageLoader {
-    public final Image WALL;
     public final Image BLUE_GHOST;
     public final Image ORANGE_GHOST;
     public final Image PINK_GHOST;
@@ -22,8 +21,7 @@ public class ImageLoader {
     public final Image CHERRY_2;
     public final Image POWER_FOOD;
 
-    ImageLoader() {
-        WALL = load("assets/wall.png");
+    public ImageLoader() {
         BLUE_GHOST = load("assets/blueGhost.png");
         ORANGE_GHOST = load("assets/orangeGhost.png");
         PINK_GHOST = load("assets/pinkGhost.png");
@@ -42,7 +40,7 @@ public class ImageLoader {
     }
 
     private Image load(String path) {
-        URL url = getClass().getResource(path);
+        URL url = getClass().getClassLoader().getResource(path);
         if (url == null) {
             throw new RuntimeException(
             "Не удалось загрузить изображение: " + path +
