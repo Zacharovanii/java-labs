@@ -69,7 +69,7 @@ public class GameController {
         im.put(KeyStroke.getKeyStroke("S"), "moveDown");
         im.put(KeyStroke.getKeyStroke("D"), "moveRight");
 
-        im.put(KeyStroke.getKeyStroke("ESC"), "togglePause");
+        im.put(KeyStroke.getKeyStroke("P"), "togglePause");
         im.put(KeyStroke.getKeyStroke("SPACE"), "restart");
     }
 

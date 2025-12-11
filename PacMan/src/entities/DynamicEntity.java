@@ -33,21 +33,22 @@ public abstract class DynamicEntity extends Entity {
 
 
     public void handleTeleport(int boardWidth) {
-        int tunnelY = 9 * size;
-        int tolerance = size / 2;
+        int tunnelTop = 9 * size - size / 2;
+        int tunnelBottom = 9 * size + size / 2;
 
-        // Проверяем, что призрак именно в туннеле
-        if (Math.abs(y - tunnelY) > tolerance) return;
-
-        if (x < -size) {
-            x = boardWidth;
-            y = tunnelY;
-        }
-        else if (x > boardWidth) {
-            x = -size;
-            y = tunnelY;
+        // Призрак находится в пределах туннеля?
+        if (y >= tunnelTop && y <= tunnelBottom) {
+            // Вышел слева
+            if (x < -size) {
+                x = boardWidth - size;
+            }
+            // Вышел справа
+            else if (x > boardWidth - size) {
+                x = -size;
+            }
         }
     }
+
 
     public void checkWallsCollision(HashSet<Wall> walls) {
         for (Wall wall : walls) {
