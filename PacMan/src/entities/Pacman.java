@@ -13,6 +13,7 @@ public class Pacman extends DynamicEntity {
     public final Image left;
     public final Image right;
 
+    private int boardWidth;
 
     public Pacman(
             Image _up, Image _down, Image _left, Image _right,
@@ -28,6 +29,7 @@ public class Pacman extends DynamicEntity {
     public void requestDirection(Direction d) {
         this.desiredDirection = d;
     }
+    public void setBoardWidth(int bw) { boardWidth = bw; }
 
 
     public void updateSprite() {
@@ -51,7 +53,7 @@ public class Pacman extends DynamicEntity {
         x += velocityX;
         y += velocityY;
 
-//        handleTeleport();
+        handleTeleport(boardWidth);
         checkWallsCollision(walls);
 
         updateSprite();

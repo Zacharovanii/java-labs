@@ -20,19 +20,20 @@ public class Game {
             HashSet<SuperFood> superFoods,
             Pacman pacman
     ) {
+        geometry = GameGeometry.standard();
+        state = new GameState();
+        pacman.setBoardWidth(geometry.boardWidth());
+
         this.walls = walls;
         this.foods = foods;
         this.ghosts = ghosts;
         this.superFoods = superFoods;
         this.pacman = pacman;
 
-        // Добавляем Pacman как цель для всех призраков
         for (Ghost g : ghosts) {
             g.addTarget(pacman);
+            g.setBoardWidth(geometry.boardWidth());
         }
-
-        geometry = GameGeometry.standard();
-        state = new GameState();
     }
 
     private boolean isPacmanGhostCollision() {

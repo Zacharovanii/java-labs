@@ -13,11 +13,14 @@ public class Ghost extends DynamicEntity {
     private Pacman target;
     private final Random random = new Random();
     private GhostMode mode = GhostMode.CHASE;
+    private int boardWidth;
 
     private int frightenedTimer = 0;
 
     private int speed;
     private final int basicSpeed;
+    private final int EYES_SPEED;
+
 
     private final Image base;
     private final Image scared;
@@ -34,20 +37,24 @@ public class Ghost extends DynamicEntity {
         eyes = _eyes;
         speed = _speed;
         basicSpeed = _speed;
+        EYES_SPEED = _speed * 2;
         direction = Direction.RIGHT;
     }
+
 
     public void addTarget(Pacman pacman) {
         target = pacman;
     }
+    public void setBoardWidth(int bw) {boardWidth = bw;}
 
     public void changeToFrightened() {
-        if (mode == GhostMode.EYES) return; // глаза не пугаются
+        if (mode == GhostMode.EYES) return;
         mode = GhostMode.FRIGHTENED;
         image = scared;
-        speed = basicSpeed / 2;
+        this.speed = basicSpeed / 2;
         int frightenedDuration = 8000;
-        frightenedTimer = frightenedDuration / 50; // пересчитали под 50мс Tick
+        frightenedTimer = frightenedDuration / 50;
+        updateVelocity();
     }
 
 
@@ -60,13 +67,16 @@ public class Ghost extends DynamicEntity {
     public void changeToEyes() {
         mode = GhostMode.EYES;
         image = eyes;
-        speed = basicSpeed * 2;
+        speed = EYES_SPEED;
+        updateVelocity();
     }
+
 
     public void changeToChase() {
         mode = GhostMode.CHASE;
         image = base;
-        speed = basicSpeed / 2;
+        speed = basicSpeed;
+        updateVelocity();
     }
 
     public GhostMode getMode() {
@@ -89,30 +99,42 @@ public class Ghost extends DynamicEntity {
             return;
         }
 
+        updateVelocity();
         chooseDirection(walls);
         updateVelocity();
-        x += velocityX;
-        y += velocityY;
+        updateVelocity();
+        x += velocityX * speed;
+        y += velocityY * speed;
 
-//        handleTeleport();
+
+        handleTeleport(boardWidth);
         checkWallsCollision(walls);
     }
 
+    @Override
+    public void updateVelocity() {
+        switch (direction) {
+            case UP -> { velocityX = 0; velocityY = -1; }
+            case DOWN -> { velocityX = 0; velocityY = 1; }
+            case LEFT -> { velocityX = -1; velocityY = 0; }
+            case RIGHT -> { velocityX = 1; velocityY = 0; }
+        }
+    }
+
+
 
     private void moveToHome() {
-        int speedEyes = speed * 2;
+        int speedEyes = EYES_SPEED;
 
         // Двигаем по X
         if (x < startX) {
             x += speedEyes;
-            if (x > startX) x = startX; // не перескакиваем центр
+            if (x > startX) x = startX;
         }
         else if (x > startX) {
             x -= speedEyes;
             if (x < startX) x = startX;
         }
-
-        // Двигаем по Y
         if (y < startY) {
             y += speedEyes;
             if (y > startY) y = startY;
@@ -122,7 +144,6 @@ public class Ghost extends DynamicEntity {
             if (y < startY) y = startY;
         }
 
-        // Если точно в центре — оживляем
         if (x == startX && y == startY) {
             changeToChase();
         }

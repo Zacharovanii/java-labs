@@ -49,8 +49,6 @@ public abstract class DynamicEntity extends Entity {
         }
     }
 
-
-
     public void checkWallsCollision(HashSet<Wall> walls) {
         for (Wall wall : walls) {
             if (intersects(wall)) {
