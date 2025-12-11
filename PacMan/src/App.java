@@ -31,10 +31,6 @@ public class App {
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
 
-                // Добавление слушателей клавиш
-                frame.addKeyListener(controller);
-                gameView.addKeyListener(controller);
-                hudView.addKeyListener(controller);
 
                 frame.requestFocusInWindow();
 
