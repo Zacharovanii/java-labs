@@ -1,8 +1,11 @@
 import controller.GameController;
+import model.GameModel;
+import model.MapLoader;
+import model.MapModel;
+import view.GameView;
 import view.HUDView;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 
 public class App extends JFrame {
@@ -11,10 +14,13 @@ public class App extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
-        GameController controller = new GameController();
+        MapModel model = MapLoader.load(GameModel.tileMap);
+        GameView view = new GameView(model);
+        HUDView hud = new HUDView();
+        GameController controller = new GameController(model, view, hud);
 
-        add(controller.getHUD(), BorderLayout.NORTH);
-        add(controller.getViewPanel(), BorderLayout.CENTER);
+        add(hud, BorderLayout.NORTH);
+        add(view, BorderLayout.CENTER);
 
         addKeyListener(controller);
 
@@ -22,7 +28,6 @@ public class App extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
     }
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(App::new);
     }

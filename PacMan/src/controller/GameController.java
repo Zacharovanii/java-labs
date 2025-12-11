@@ -2,40 +2,28 @@ package controller;
 
 import model.*;
 import view.GameView;
-import entities.*;
 import view.HUDView;
 
 import javax.swing.*;
 import java.awt.event.*;
 
 public class GameController implements ActionListener, KeyListener {
-
     private MapModel map;
-    private final HUDView hud;
     private final GameView view;
-    private final Timer timer;
+    private final HUDView hud;
 
-    public GameController() {
-        map = MapLoader.load(GameModel.tileMap);
-        view = new GameView(map);
-        hud = new HUDView();
+public GameController(MapModel _map, GameView _view, HUDView _hud) {
+        map = _map;
+        view = _view;
+        hud = _hud;
 
-        timer = new Timer(50, this); // 20 FPS
-        timer.start();
+        Timer gameTimer = new Timer(50, this); // 20 FPS
+        Timer hudTimer = new Timer(100, e -> hud.repaint());
 
-        Timer hudTimer = new Timer(100, e -> {
-            hud.repaint();
-        });
+        gameTimer.start();
         hudTimer.start();
     }
 
-    public JPanel getViewPanel() {
-        return view;
-    }
-
-    public HUDView getHUD() {
-        return hud;
-    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -60,7 +48,6 @@ public class GameController implements ActionListener, KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
         if (GameModel.gameOver) {
-            // Перезапуск игры
             restartGame();
             return;
         }
@@ -90,7 +77,7 @@ public class GameController implements ActionListener, KeyListener {
     private void resetLevel() {
         map.resetPositions();
         GameModel.isPaused = false;
-        hud.startTimer(); // Убедимся, что таймер запущен
+        hud.startTimer();
         hud.repaint();
     }
 
@@ -110,9 +97,7 @@ public class GameController implements ActionListener, KeyListener {
             GameModel.gameOver = true;
         }
 
-        // ОБНОВЛЕНИЕ — сбрасываем всех призраков
         map.resetGhosts();
-
         map.pacman.reset();
     }
 
